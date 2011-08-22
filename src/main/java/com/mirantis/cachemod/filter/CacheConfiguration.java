@@ -29,7 +29,7 @@ public class CacheConfiguration {
 
   private static final Log log = LogFactory.getLog(CacheConfiguration.class);
   
-  private static final String DEF_CACHE_NAME = "page-filter";
+  private static final String DEF_CACHE_NAME = "cachemod-filter";
   private final static String ALREADY_FILTERED_KEY = "com.mirantis.cachemod.filter.";
   
   private String alreadyFilteredKey;
