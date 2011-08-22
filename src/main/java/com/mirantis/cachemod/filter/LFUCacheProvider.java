@@ -17,22 +17,24 @@
 package com.mirantis.cachemod.filter;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class LRUCacheProvider implements CacheProvider {
+public class LFUCacheProvider implements CacheProvider {
 
-  private final int UNITS = Integer.getInteger("cachemod.lru.units", 1000);
-  private final int CONCURRENT = Integer.getInteger("cachemod.lru.concurrent", 16);
+  private final int UNITS = Integer.getInteger("cachemod.lfu.units", 1000);
+  private final int CONCURRENT = Integer.getInteger("cachemod.lfu.concurrent", 16);
 
-  private ConcurrentHashMap<String, LRUEntry> localMap;
+  private ConcurrentHashMap<String, LFUEntry> localMap;
   private String cacheName;
 
   private DualBlockingLinkedList<CacheEntry> list = new DualBlockingLinkedList<CacheEntry>();  
 
-  public static class LRUEntry extends DualBlockingLinkedList.Entry<CacheEntry> {
+  public static class LFUEntry extends DualBlockingLinkedList.Entry<CacheEntry> {
    
     private final String key;
+    private final AtomicInteger hits = new AtomicInteger(0);
     
-    public LRUEntry(String key, CacheEntry initValue) {
+    public LFUEntry(String key, CacheEntry initValue) {
       super(initValue);
       this.key = key;
     }
@@ -41,12 +43,19 @@ public class LRUCacheProvider implements CacheProvider {
       return key;
     }
 
+    public int touch() {
+      return hits.incrementAndGet();
+    }
+    
+    public int detouch() {
+      return hits.decrementAndGet();
+    }
   }
   
   @Override
   public void init(String cacheName) {
     this.cacheName = cacheName;
-    this.localMap = new ConcurrentHashMap<String, LRUEntry>(UNITS, 0.75f, CONCURRENT);
+    this.localMap = new ConcurrentHashMap<String, LFUEntry>(UNITS, 0.75f, CONCURRENT);
   }
 
   @Override
@@ -56,9 +65,10 @@ public class LRUCacheProvider implements CacheProvider {
 
   @Override
   public CacheEntry getEntry(String key) {
-    LRUEntry entry = localMap.get(key);
+    LFUEntry entry = localMap.get(key);
     if (entry != null) {
       list.moveToTail(entry);
+      entry.touch();
       return entry.getValue();
     }
     return null;
@@ -66,11 +76,12 @@ public class LRUCacheProvider implements CacheProvider {
 
   @Override
   public void putEntry(String key, CacheEntry cacheEntry) {
-    LRUEntry newEntry = new LRUEntry(key, cacheEntry);
-    LRUEntry prevEntry = localMap.putIfAbsent(key, newEntry);
+    LFUEntry newEntry = new LFUEntry(key, cacheEntry);
+    LFUEntry prevEntry = localMap.putIfAbsent(key, newEntry);
     if (prevEntry != null) {
       prevEntry.setValue(cacheEntry);
       list.moveToTail(prevEntry);
+      prevEntry.touch();
     }
     else {
       list.addToTail(newEntry);
@@ -80,9 +91,14 @@ public class LRUCacheProvider implements CacheProvider {
 
   public void evict() {
     while(list.size() > UNITS) {
-      LRUEntry head = (LRUEntry) list.removeFirst();
-      if (head != null) {
-        localMap.remove(head.getKey());
+      LFUEntry entry = (LFUEntry) list.removeFirst();
+      if (entry != null) {
+        if (entry.detouch() > 0) {
+          list.addToTail(entry);
+        }
+        else {
+          localMap.remove(entry.getKey());
+        }
       }
     }
   }

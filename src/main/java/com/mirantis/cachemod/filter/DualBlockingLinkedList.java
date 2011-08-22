@@ -105,7 +105,7 @@ public class DualBlockingLinkedList<E> {
     }
   }
   
-  public Entry<E> pool() {
+  public Entry<E> removeFirst() {
     lock.lock();
     try {
       Entry<E> head = sentinel.next;
