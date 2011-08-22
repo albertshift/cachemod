@@ -18,9 +18,9 @@ package com.mirantis.cachemod.filter;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mirantis.cachemod.filter.LRUCacheProvider.LRUCacheEntry;
-
 import junit.framework.TestCase;
+
+import com.mirantis.cachemod.filter.LRUCacheProvider.LRUEntry;
 
 public class LRUCacheProviderTest extends TestCase {
 
@@ -28,7 +28,6 @@ public class LRUCacheProviderTest extends TestCase {
     LRUCacheProvider lru = new LRUCacheProvider();
     lru.init("cache");
     CacheEntry entry = lru.instantiateEntry();
-    entry.setKey("1");
     lru.putEntry("1", entry);
     CacheEntry entryInCache = lru.getEntry("1");
     assertEquals(entry, entryInCache);
@@ -41,14 +40,12 @@ public class LRUCacheProviderTest extends TestCase {
     for (int i = 0; i != 1000; ++i) {
       entry = lru.instantiateEntry();
       String key = Integer.toString(i);
-      entry.setKey(key);
       lru.putEntry(key, entry);
       CacheEntry entryInCache = lru.getEntry(key);
       assertEquals(entry, entryInCache);
     }
-    ConcurrentHashMap<String, LRUCacheEntry> cache = (ConcurrentHashMap<String, LRUCacheEntry>) lru.getCache();
+    ConcurrentHashMap<String, LRUEntry> cache = (ConcurrentHashMap<String, LRUEntry>) lru.getCache();
     entry = lru.instantiateEntry();
-    entry.setKey("1001");
     lru.putEntry("1001", entry);
     assertEquals(1000, cache.size());
   }
@@ -56,20 +53,17 @@ public class LRUCacheProviderTest extends TestCase {
   public void testSecondPut() {
     LRUCacheProvider lru = new LRUCacheProvider();
     lru.init("cache");
-    ConcurrentHashMap<String, LRUCacheEntry> cache = (ConcurrentHashMap<String, LRUCacheEntry>) lru.getCache();
+    ConcurrentHashMap<String, LRUEntry> cache = (ConcurrentHashMap<String, LRUEntry>) lru.getCache();
 
     
     CacheEntry entry = lru.instantiateEntry();
-    entry.setKey("1");
     lru.putEntry("1", entry);
     assertEquals(1, cache.size());
 
     entry = lru.instantiateEntry();
-    entry.setKey("11");
     lru.putEntry("11", entry);
     
     entry = lru.instantiateEntry();
-    entry.setKey("11");
     lru.putEntry("11", entry);
     assertEquals(2, cache.size());
     

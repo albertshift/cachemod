@@ -113,7 +113,6 @@ public class CacheFilter implements Filter {
 
       } else {
         cacheEntry = conf.getCacheProvider().instantiateEntry();
-        cacheEntry.setKey(key);
         
         CacheHttpServletResponse cacheResponse = new CacheHttpServletResponse((HttpServletResponse) response, cacheEntry, conf, fragmentRequest);
         chain.doFilter(request, cacheResponse);

@@ -22,8 +22,7 @@ import java.util.Locale;
 public class CacheEntry implements Serializable {
   
   private static final long serialVersionUID = 3463262L;
-  
-  protected String key = null;
+
   protected Object userData = null;
   protected Locale locale = null;
   protected long expires = Long.MAX_VALUE;
@@ -32,14 +31,6 @@ public class CacheEntry implements Serializable {
   protected String contentEncoding = null;
   protected String contentType = null;
   protected byte[] content = null;
-
-  public String getKey() {
-    return key;
-  }
-
-  public void setKey(String key) {
-    this.key = key;
-  }
 
   public String getContentType() {
     return contentType;
