@@ -9,7 +9,7 @@ import com.mirantis.cachemod.filter.SimpleLFUCacheProvider.LFUEntry;
 public class NewLFUCacheProviderTest extends TestCase {
 
   public void testOne() {
-    NewLFUCacheProvider lfu = new NewLFUCacheProvider();
+    LFUCacheProvider lfu = new LFUCacheProvider();
     lfu.init("cache");
     CacheEntry entry = lfu.instantiateEntry();
     lfu.putEntry("1", entry);
@@ -18,7 +18,7 @@ public class NewLFUCacheProviderTest extends TestCase {
   }
 
   public void testEviction() {
-    NewLFUCacheProvider lfu = new NewLFUCacheProvider();
+    LFUCacheProvider lfu = new LFUCacheProvider();
     lfu.init("cache");
     CacheEntry entry = lfu.instantiateEntry();
     for (int i = 0; i != 1000; ++i) {
@@ -35,7 +35,7 @@ public class NewLFUCacheProviderTest extends TestCase {
   }
   
   public void testSecondPut() {
-    NewLFUCacheProvider lfu = new NewLFUCacheProvider();
+    LFUCacheProvider lfu = new LFUCacheProvider();
     lfu.init("cache");
     ConcurrentHashMap<String, LFUEntry> cache = (ConcurrentHashMap<String, LFUEntry>) lfu.getCache();
 

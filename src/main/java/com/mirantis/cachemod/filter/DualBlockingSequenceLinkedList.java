@@ -5,7 +5,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 
-public class DualBlockingSortedList<E> {
+public class DualBlockingSequenceLinkedList<E> {
   
   private final Node<E> head = new Node<E>();
   private final Lock lock = new ReentrantLock();

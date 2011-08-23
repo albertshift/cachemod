@@ -21,7 +21,7 @@ public class BanckmarkTest extends TestCase {
   }
 
   public void testLFU() {
-    NewLFUCacheProvider lfu = new NewLFUCacheProvider();
+    LFUCacheProvider lfu = new LFUCacheProvider();
     lfu.init("cache");
     //System.out.println("NEW_LFU = " + benchmark(lfu));
     System.out.println("LFU_ND = " + benchmarkND(lfu));

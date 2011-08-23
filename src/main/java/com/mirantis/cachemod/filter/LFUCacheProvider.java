@@ -18,7 +18,7 @@ package com.mirantis.cachemod.filter;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class NewLFUCacheProvider implements CacheProvider {
+public class LFUCacheProvider implements CacheProvider {
 
   private final int UNITS = Integer.getInteger("cachemod.lfu.units", 1000);
   private final int CONCURRENT = Integer.getInteger("cachemod.lfu.concurrent", 16);
@@ -26,9 +26,9 @@ public class NewLFUCacheProvider implements CacheProvider {
   private ConcurrentHashMap<String, LFUEntry> localMap;
   private String cacheName;
 
-  private DualBlockingSortedList<CacheEntry> list = new DualBlockingSortedList<CacheEntry>();  
+  private DualBlockingSequenceLinkedList<CacheEntry> list = new DualBlockingSequenceLinkedList<CacheEntry>();  
 
-  public static class LFUEntry extends DualBlockingSortedList.Entry<CacheEntry> {
+  public static class LFUEntry extends DualBlockingSequenceLinkedList.Entry<CacheEntry> {
    
     private final String key;
     
