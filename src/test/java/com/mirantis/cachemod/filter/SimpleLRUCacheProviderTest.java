@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 import com.mirantis.cachemod.filter.LRUCacheProvider.LRUEntry;
 
-public class LRUCacheProviderTest extends TestCase {
+public class SimpleLRUCacheProviderTest extends TestCase {
 
   public void testOne() {
     LRUCacheProvider lru = new LRUCacheProvider();

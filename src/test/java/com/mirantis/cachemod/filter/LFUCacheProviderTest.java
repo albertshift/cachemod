@@ -20,12 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import junit.framework.TestCase;
 
-import com.mirantis.cachemod.filter.LFUCacheProvider.LFUEntry;
+import com.mirantis.cachemod.filter.SimpleLFUCacheProvider.LFUEntry;
 
 public class LFUCacheProviderTest extends TestCase {
 
   public void testOne() {
-    LFUCacheProvider lfu = new LFUCacheProvider();
+    SimpleLFUCacheProvider lfu = new SimpleLFUCacheProvider();
     lfu.init("cache");
     CacheEntry entry = lfu.instantiateEntry();
     lfu.putEntry("1", entry);
@@ -34,7 +34,7 @@ public class LFUCacheProviderTest extends TestCase {
   }
 
   public void testEviction() {
-    LFUCacheProvider lfu = new LFUCacheProvider();
+    SimpleLFUCacheProvider lfu = new SimpleLFUCacheProvider();
     lfu.init("cache");
     CacheEntry entry = lfu.instantiateEntry();
     for (int i = 0; i != 1000; ++i) {
@@ -51,7 +51,7 @@ public class LFUCacheProviderTest extends TestCase {
   }
   
   public void testSecondPut() {
-    LFUCacheProvider lfu = new LFUCacheProvider();
+    SimpleLFUCacheProvider lfu = new SimpleLFUCacheProvider();
     lfu.init("cache");
     ConcurrentHashMap<String, LFUEntry> cache = (ConcurrentHashMap<String, LFUEntry>) lfu.getCache();
 

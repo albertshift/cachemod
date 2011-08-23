@@ -96,4 +96,8 @@ public class NewLFUCacheProvider implements CacheProvider {
     return cacheName;
   }
   
+  public int size() {
+    return list.size();
+  }
+
 }

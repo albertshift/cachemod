@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import junit.framework.TestCase;
 
-import com.mirantis.cachemod.filter.LFUCacheProvider.LFUEntry;
+import com.mirantis.cachemod.filter.SimpleLFUCacheProvider.LFUEntry;
 
 public class NewLFUCacheProviderTest extends TestCase {
 

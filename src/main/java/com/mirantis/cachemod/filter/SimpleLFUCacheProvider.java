@@ -19,7 +19,7 @@ package com.mirantis.cachemod.filter;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LFUCacheProvider implements CacheProvider {
+public class SimpleLFUCacheProvider implements CacheProvider {
 
   private final int UNITS = Integer.getInteger("cachemod.lfu.units", 1000);
   private final int CONCURRENT = Integer.getInteger("cachemod.lfu.concurrent", 16);
@@ -110,6 +110,10 @@ public class LFUCacheProvider implements CacheProvider {
 
   public String getCacheName() {
     return cacheName;
+  }
+  
+  public int size() {
+    return list.size();
   }
   
 }

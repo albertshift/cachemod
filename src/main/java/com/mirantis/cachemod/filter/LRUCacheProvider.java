@@ -95,5 +95,9 @@ public class LRUCacheProvider implements CacheProvider {
   public String getCacheName() {
     return cacheName;
   }
-  
+
+  public int size() {
+    return list.size();
+  }
+
 }

@@ -28,4 +28,6 @@ public interface CacheProvider {
   
   public Object getCache();
   
+  public int size();
+  
 }
