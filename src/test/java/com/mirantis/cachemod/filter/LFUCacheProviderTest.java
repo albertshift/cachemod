@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 import com.mirantis.cachemod.filter.SimpleLFUCacheProvider.LFUEntry;
 
-public class NewLFUCacheProviderTest extends TestCase {
+public class LFUCacheProviderTest extends TestCase {
 
   public void testOne() {
     LFUCacheProvider lfu = new LFUCacheProvider();
