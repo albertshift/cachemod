@@ -8,9 +8,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class DualBlockingLinkedList<E> {
   
-  private Entry<E> sentinel = new Entry<E>(null);
-  private Lock lock = new ReentrantLock();
-  private AtomicInteger size = new AtomicInteger(0);
+  private final Entry<E> sentinel = new Entry<E>(null);
+  private final Lock lock = new ReentrantLock();
+  private final AtomicInteger size = new AtomicInteger(0);
   
   public static class Entry<E> {
     
@@ -59,7 +59,7 @@ public class DualBlockingLinkedList<E> {
     return size.get();
   }
   
-  public void addToTail(Entry<E> entry) {
+  public void add(Entry<E> entry) {
     lock.lock();
     try {
       size.incrementAndGet();
@@ -70,7 +70,7 @@ public class DualBlockingLinkedList<E> {
     }
   }
   
-  public void moveToTail(Entry<E> entry) {
+  public void touch(Entry<E> entry) {
     if (isTail(entry) || entry.isNew()) {
       return;
     }
@@ -105,7 +105,7 @@ public class DualBlockingLinkedList<E> {
     }
   }
   
-  public Entry<E> removeFirst() {
+  public Entry<E> first() {
     lock.lock();
     try {
       Entry<E> head = sentinel.next;

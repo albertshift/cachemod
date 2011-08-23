@@ -67,7 +67,7 @@ public class LFUCacheProvider implements CacheProvider {
   public CacheEntry getEntry(String key) {
     LFUEntry entry = localMap.get(key);
     if (entry != null) {
-      list.moveToTail(entry);
+      list.touch(entry);
       entry.touch();
       return entry.getValue();
     }
@@ -80,21 +80,21 @@ public class LFUCacheProvider implements CacheProvider {
     LFUEntry prevEntry = localMap.putIfAbsent(key, newEntry);
     if (prevEntry != null) {
       prevEntry.setValue(cacheEntry);
-      list.moveToTail(prevEntry);
+      list.touch(prevEntry);
       prevEntry.touch();
     }
     else {
-      list.addToTail(newEntry);
+      list.add(newEntry);
       evict();
     }
   }
 
   public void evict() {
     while(list.size() > UNITS) {
-      LFUEntry entry = (LFUEntry) list.removeFirst();
+      LFUEntry entry = (LFUEntry) list.first();
       if (entry != null) {
         if (entry.detouch() > 0) {
-          list.addToTail(entry);
+          list.add(entry);
         }
         else {
           localMap.remove(entry.getKey());
