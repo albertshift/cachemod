@@ -18,6 +18,8 @@ package com.mirantis.cachemod.filter;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.mirantis.cachemod.utils.DualBlockingSequenceLinkedList;
+
 public class LFUCacheProvider implements CacheProvider {
 
   private final int UNITS = Integer.getInteger("cachemod.lfu.units", 1000);

@@ -18,6 +18,8 @@ package com.mirantis.cachemod.filter;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.mirantis.cachemod.utils.DualBlockingLinkedList;
+
 public class LRUCacheProvider implements CacheProvider {
 
   private final int UNITS = Integer.getInteger("cachemod.lru.units", 1000);

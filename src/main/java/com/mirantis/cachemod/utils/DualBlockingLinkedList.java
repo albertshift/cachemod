@@ -1,4 +1,4 @@
-package com.mirantis.cachemod.filter;
+package com.mirantis.cachemod.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
