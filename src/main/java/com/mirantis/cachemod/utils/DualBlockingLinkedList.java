@@ -1,5 +1,8 @@
 package com.mirantis.cachemod.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.concurrent.locks.Lock;
@@ -31,12 +34,19 @@ public class DualBlockingLinkedList<E> {
       return value;
     }
 
-    public void setValue(E newValue) {
-      valueUpdater.set(this, newValue);
+    public E setValue(E newValue) {
+      return (E) valueUpdater.getAndSet(this, newValue);
     }
     
     private boolean isNew() {
       return next == this;
+    }
+    
+    private void clear() {
+      prev.next = null;
+      next.prev = null;
+      next = this;
+      prev = this;
     }
     
     private void unlink() {
@@ -117,6 +127,49 @@ public class DualBlockingLinkedList<E> {
       else {
         return null;
       }
+    }
+    finally {
+      lock.unlock();
+    }
+  }
+  
+  public void clear() {
+    lock.lock();
+    try {
+      size.set(0);
+      sentinel.clear();
+    }
+    finally {
+      lock.unlock();
+    }
+  }
+  
+  public boolean containsValue(Object value) {
+    if (value == null) {
+      return false;
+    }
+    lock.lock();
+    try {
+      for (Entry<E> item = sentinel.next; item != sentinel; item = item.next) {
+        if (value.equals(item.getValue())) {
+          return true;
+        }
+      }
+      return false;
+    }
+    finally {
+      lock.unlock();
+    }
+  }
+  
+  public Collection<E> values() {
+    List<E> list = new ArrayList<E>(size.get());
+    lock.lock();
+    try {
+      for (Entry<E> item = sentinel.next; item != sentinel; item = item.next) {
+        list.add(item.getValue());
+      }
+      return list;
     }
     finally {
       lock.unlock();

@@ -1,5 +1,8 @@
 package com.mirantis.cachemod.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -165,6 +168,53 @@ public class DualBlockingSequenceLinkedList<E> {
     return size;
   }
 
+  public void clear() {
+    lock.lock();
+    try {
+      size = 0;
+      head.clear();
+    }
+    finally {
+      lock.unlock();
+    }
+  }
+  
+  public boolean containsValue(Object value) {
+    if (value == null) {
+      return false;
+    }
+    lock.lock();
+    try {
+      for(Node<E> node = head; node != null; node = node.next) {
+        for (Entry<E> item = node.sentinel.next; item != node.sentinel; item = item.next) {
+          if (value.equals(item.getValue())) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    finally {
+      lock.unlock();
+    }
+  }
+  
+  public Collection<E> values() {
+    List<E> list = new ArrayList<E>(size);
+    lock.lock();
+    try {
+      for(Node<E> node = head; node != null; node = node.next) {
+        for (Entry<E> item = node.sentinel.next; item != node.sentinel; item = item.next) {
+          list.add(item.getValue());
+        }
+      }
+      return list;
+    }
+    finally {
+      lock.unlock();
+    }
+  }
+  
   public static class Node<E> {
 
     private volatile Node<E> next = null;
@@ -172,6 +222,13 @@ public class DualBlockingSequenceLinkedList<E> {
     private volatile int entries;
     private volatile int ghostsBefore;
 
+    public void clear() {
+      next = null;
+      sentinel.clear();
+      entries = 0;
+      ghostsBefore = 0;
+    }
+    
     public boolean isEmpty() {
       return entries == 0;
     }
@@ -233,15 +290,23 @@ public class DualBlockingSequenceLinkedList<E> {
       return value;
     }
 
-    public void setValue(E newValue) {
-      valueUpdater.set(this, newValue);
+    public E setValue(E newValue) {
+      return (E) valueUpdater.getAndSet(this, newValue);
     }
 
-    private boolean isNew() {
+    public boolean isNew() {
       return next == this;
     }
     
-    private void unlink() {
+    public void clear() {
+      prev.next = null;
+      next.prev = null;
+      next = this;
+      prev = this;
+      node = null;
+    }
+    
+    public void unlink() {
       prev.next = next;
       next.prev = prev;
       next = this;
@@ -249,7 +314,7 @@ public class DualBlockingSequenceLinkedList<E> {
       node = null;
     }
     
-    private void link(Node<E> node) {
+    public void link(Node<E> node) {
       this.node = node;
       Entry<E> sentinel = node.sentinel;
       prev = sentinel.prev;
